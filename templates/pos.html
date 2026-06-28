@@ -1,0 +1,173 @@
+{% extends "layout.html" %}
+
+{% block title %}POS{% endblock %}
+
+{% block content %}
+
+<h2>🛒 POS System</h2>
+
+<!-- CATEGORY FILTER -->
+<div class="mb-3">
+
+    <a href="/pos" class="btn btn-secondary btn-sm">All</a>
+
+    {% for c in categories %}
+        <a href="/pos?category={{ c[0] }}" class="btn btn-primary btn-sm">
+            {{ c[0] }}
+        </a>
+    {% endfor %}
+
+</div>
+
+<!-- SELECTED CATEGORY TITLE -->
+{% if selected_category %}
+    <h4>📂 {{ selected_category }}</h4>
+{% else %}
+    <div class="alert alert-info">
+        👉 Select a category to view products
+    </div>
+{% endif %}
+
+<div class="row">
+
+    <!-- PRODUCTS -->
+    <div class="col-md-6">
+
+        {% if selected_category %}
+
+            <input type="text" class="form-control mb-3" placeholder="Search product...">
+
+            {% for product in products %}
+
+            <div class="card p-2 mb-2"
+                 onclick="addToCart('{{ product.name|e }}', {{ product.price|float }})">
+
+                <strong>{{ product.name }}</strong><br>
+                ₱{{ product.price }}
+
+            </div>
+
+            {% endfor %}
+
+        {% endif %}
+
+    </div>
+
+    <!-- CART -->
+    <div class="col-md-6">
+
+        <h4>🧾 Cart</h4>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="cartBody"></tbody>
+        </table>
+
+        <h4>Total: ₱<span id="total">0</span></h4>
+
+        <input type="number" id="cash" class="form-control mb-2" placeholder="Cash">
+
+        <h5>Change: ₱<span id="change">0</span></h5>
+
+        <button class="btn btn-success w-100" onclick="pay()">PAY</button>
+
+    </div>
+
+</div>
+
+<script>
+
+let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let total = 0;
+
+// 🔥 INIT LOAD CART
+window.onload = function(){
+    renderCart();
+};
+
+function saveCart(){
+    localStorage.setItem("cart", JSON.stringify(cart));
+}
+
+function addToCart(name, price){
+    cart.push({ name: String(name), price: Number(price) });
+
+    saveCart();
+    renderCart();
+}
+
+function renderCart(){
+    let tbody = document.getElementById("cartBody");
+    tbody.innerHTML = "";
+    total = 0;
+
+    cart.forEach((item, index) => {
+        total += Number(item.price);
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${item.name}</td>
+            <td>₱${item.price}</td>
+            <td><button onclick="removeItem(${index})">X</button></td>
+        </tr>`;
+    });
+
+    document.getElementById("total").innerText = total;
+}
+
+function removeItem(index){
+    cart.splice(index, 1);
+
+    saveCart();
+    renderCart();
+}
+
+document.getElementById("cash").addEventListener("input", function(){
+    let cash = Number(this.value);
+    let change = cash - total;
+    document.getElementById("change").innerText = change >= 0 ? change : 0;
+});
+
+function pay(){
+    let cash = Number(document.getElementById("cash").value || 0);
+
+    let cleanCart = cart.map(item => ({
+        name: String(item.name),
+        price: Number(item.price)
+    }));
+
+    fetch("/save-sale", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart: cleanCart, cash: cash })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        alert("Sale saved!");
+
+        // 🔥 CLEAR CART AFTER PAY
+        cart = [];
+        saveCart();
+        renderCart();
+
+        localStorage.setItem("receiptItems", JSON.stringify(cleanCart));
+        localStorage.setItem("transactionId", data.transaction_id);
+        localStorage.setItem("total", data.total);
+        localStorage.setItem("cash", data.cash);
+        localStorage.setItem("change", data.change);
+
+        window.location.href = "/receipt";
+    });
+}
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+
+    <div class="col-12 col-sm-6 col-lg-3 mb-3">
+        <div class="card p-4">
+            <h5>💰 Today's Sales</h5>
+            <h2>₱0.00</h2>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3 mb-3">
+        <div class="card p-4">
+            <h5>📦 Products</h5>
+            <h2>0</h2>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3 mb-3">
+        <div class="card p-4">
+            <h5>👥 Users</h5>
+            <h2>1</h2>
+        </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3 mb-3">
+        <div class="card p-4">
+            <h5>⚠ Low Stock</h5>
+            <h2>0</h2>
+        </div>
+    </div>
+
+</div>
+
+<div class="card p-4 mt-4">
+<h2>📊 Sales Overview</h2>
+
+<div class="row">
+
+    <div class="col">
+        <div class="card p-3">
+            <h5>Today Sales</h5>
+            <h3>₱{{ today_sales }}</h3>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card p-3">
+            <h5>Total Sales</h5>
+            <h3>₱{{ total_sales }}</h3>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card p-3">
+            <h5>Transactions</h5>
+            <h3>{{ total_transactions }}</h3>
+        </div>
+    </div>
+
+</div>
+
+<h4 class="mt-4">Recent Sales</h4>
+
+<table class="table">
+    <tr>
+        <th>Transaction</th>
+        <th>Product</th>
+        <th>Total</th>
+        <th>Date</th>
+    </tr>
+
+    {% for s in recent_sales %}
+    <tr>
+        <td>{{ s.transaction_id }}</td>
+        <td>{{ s.product_name }}</td>
+        <td>₱{{ s.total }}</td>
+        <td>{{ s.date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</div>
+
+<div class="card p-4 mt-4">
+<h4>Recent Transactions</h4>
+
+<table class="table">
+    <tr>
+        <th>Transaction</th>
+        <th>Product</th>
+        <th>Total</th>
+        <th>Date</th>
+    </tr>
+
+    {% for s in recent_sales %}
+    <tr>
+        <td>{{ s.transaction_id }}</td>
+        <td>{{ s.product_name }}</td>
+        <td>₱{{ s.total }}</td>
+        <td>{{ s.date }}</td>
+    </tr>
+    {% endfor %}
+</table>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Receipt</th>
+                <th>Cashier</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td colspan="3" class="text-center">
+                    No transactions found.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+{% endblock %}

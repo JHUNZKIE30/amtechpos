@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Receipt</title>
+    <style>
+        body {
+            font-family: Arial;
+            width: 300px;
+            margin: auto;
+        }
+        .center {
+            text-align: center;
+        }
+        .item {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+        .total {
+            font-weight: bold;
+            border-top: 1px dashed #000;
+            margin-top: 10px;
+            padding-top: 10px;
+        }
+        button {
+            margin-top: 15px;
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2 class="center">MY STORE</h2>
+<p class="center">Official Receipt</p>
+
+<p>Date: <span id="date"></span></p>
+
+<div id="items"></div>
+
+<p class="total">TOTAL: ₱<span id="total"></span></p>
+<p>Cash: ₱<span id="cash"></span></p>
+<p>Change: ₱<span id="change"></span></p>
+
+<button onclick="window.print()">Print Receipt</button>
+
+<script>
+let items = JSON.parse(localStorage.getItem("receiptItems")) || [];
+let transactionId = localStorage.getItem("transactionId");
+let total = localStorage.getItem("total");
+let cash = localStorage.getItem("cash");
+let change = localStorage.getItem("change");
+
+document.getElementById("date").innerText = new Date().toLocaleString();
+
+let container = document.getElementById("items");
+
+items.forEach(item => {
+    let div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `<span>${item.name}</span><span>₱${item.price}</span>`;
+    container.appendChild(div);
+});
+
+document.getElementById("total").innerText = total;
+document.getElementById("cash").innerText = cash;
+document.getElementById("change").innerText = change;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+<h2>MY STORE</h2>
+<p>Official Receipt</p>
+
+<p>Transaction: {{ transaction_id }}</p>
+
+{% for item in sales %}
+<p>{{ item.product_name }} - ₱{{ item.price }}</p>
+{% endfor %}
+
+<hr>
+
+<p><b>TOTAL: ₱{{ total }}</b></p>
+
+<button onclick="window.print()">Print</button>
